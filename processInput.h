@@ -473,7 +473,7 @@ void init() {
 #endif
     // glfw window creation
    // --------------------
-    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Missile Defense", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "3D Missile Defense System", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;

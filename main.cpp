@@ -39,12 +39,9 @@ void drawCube1(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest = 0
 void drawCube2(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, glm::vec4 color, float spec, float shininess);
 void Road(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color, glm::mat4 scaleMatrix);
 void commandAndControl(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color, unsigned int texture);
-void LampPost(Shader ourShader, glm::mat4 moveMatrix);
 void load_texture(unsigned int& texture, string image_name, GLenum format);
 void SetupPointLight(PointLight &pointLight, Shader ourShader, int lightNum);
-void FoodPlace(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y = 0);
 void Door(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color);
-void TableChairSet(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y = 0);
 long long nCr(int n, int r);
 void ShowFunctions();
 

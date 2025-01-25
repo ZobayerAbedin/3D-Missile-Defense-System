@@ -24,6 +24,7 @@
     <ProjectGuid>{5a0e01db-cbec-48e6-82f8-6e64d80fd305}</ProjectGuid>
     <RootNamespace>FinalProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>3D Missile Defence System</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
