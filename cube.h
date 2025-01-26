@@ -6,7 +6,7 @@ float TXmin = 0.0f;
 float TXmax = 1.0f + extra;
 float TYmin = 0.0f;
 float TYmax = 1.0f + extra;
-unsigned int cubeVAO, cubeVBO, cubeEBO;
+
 
 float cube_vertices[] = {
     // positions      // normals         // texture coords
@@ -60,7 +60,7 @@ unsigned int cube_indices[] = {
     22, 23, 20
 };
 
-void drawCube1(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, glm::vec4 color, float spec, float shininess)
+void drawCube(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, glm::vec4 color, float spec, float shininess)
 {
     glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     glm::mat4 translateMatrix, scaleMatrix, model, rotateYMatrix;
@@ -76,37 +76,12 @@ void drawCube1(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, 
     ourShader.setVec4("material.diffuse", color);
     ourShader.setVec4("material.specular", color * spec);
     ourShader.setFloat("material.shininess", shininess);
-    glBindVertexArray(cubeVAO);
+    //glBindVertexArray(cubeVAO);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 }
 
-void drawCube2(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, glm::vec4 color, float spec, float shininess)
-{
-    glm::mat4 identityMatrix = glm::mat4(1.0f); // Initialize matrix to identity matrix
-    glm::mat4 translateMatrix, scaleMatrix, model;
 
-    // Translation and scaling matrices
-    translateMatrix = glm::translate(identityMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
-    scaleMatrix = glm::scale(identityMatrix, glm::vec3(-1.0f, 1.0f, 1.0f));
-
-    // Combine translation and scaling for the model matrix
-    model = translateMatrix * scaleMatrix;
-
-    // Set the model matrix in the shader
-    ourShader.setMat4("model", moveMatrix * model);
-
-    // Set material properties
-    ourShader.setVec4("material.ambient", color);
-    ourShader.setVec4("material.diffuse", color);
-    ourShader.setVec4("material.specular", color * spec);
-    ourShader.setFloat("material.shininess", shininess);
-
-    // Render the cube
-    glBindVertexArray(cubeVAO);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-}
 
 
 

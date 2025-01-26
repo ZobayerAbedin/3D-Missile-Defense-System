@@ -19,6 +19,8 @@
 #include "cube.h"
 #include "processInput.h"
 #include "missile.h"
+#include "binding.h"
+#include "MissileLaunchingTruck.h"
 
 #include "stb_image.h"
 
@@ -35,17 +37,13 @@ void drawTruck(Shader lightingShader);
 void Table(Shader ourshader, glm::mat4 moveMatrix, float rotateAngleTest_Y = 0);
 void Chair(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y = 0);
 void Floor(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color);
-void drawCube1(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest = 0, glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), float spec = 1.0f, float shininess = 32.0f);
-void drawCube2(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, glm::vec4 color, float spec, float shininess);
+void drawCube(Shader ourShader, glm::mat4 moveMatrix, float rotateAngleTest_Y, glm::vec4 color, float spec, float shininess);
 void Road(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color, glm::mat4 scaleMatrix);
 void commandAndControl(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color, unsigned int texture);
 void load_texture(unsigned int& texture, string image_name, GLenum format);
 void SetupPointLight(PointLight &pointLight, Shader ourShader, int lightNum);
 void Door(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color);
 void ShowFunctions();
-
-
-
 
 const int nt = 40;
 const int ntheta = 30;
@@ -86,40 +84,13 @@ int main()
     Shader cylinderShader("vertex.vs", "fragment.fs");
 
 
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &cubeVBO);
-    glGenBuffers(1, &cubeEBO);
+    unsigned int cubeVAO, cubeVBO, cubeEBO;
+    unsigned int VBOt, VAOt, EBOt;
 
-    glBindVertexArray(cubeVAO);
+    bindCube(cubeVAO, cubeVBO, cubeEBO);
+    bindTruck(VBOt, VAOt, EBOt);
 
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices, GL_STATIC_DRAW);
-
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    //vertex normal attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)12);
-    glEnableVertexAttribArray(1);
-
-    // texture attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)24);
-    glEnableVertexAttribArray(2);
-
-    //light's VAO
-    unsigned int lightCubeVAO;
-    glGenVertexArrays(1, &lightCubeVAO);
-    glBindVertexArray(lightCubeVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+   
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -196,7 +167,6 @@ int main()
         ourShader.setMat4("projection", projection);
 
        
-
         // camera/view transformation
         //glm::mat4 view = basic_camera.createViewMatrix();
         glm::mat4 view = camera.GetViewMatrix();
@@ -300,7 +270,7 @@ int main()
         translateMatrix = glm::translate(identityMatrix, glm::vec3(9.8f, -0.4f, -8.0f));
         scaleMatrix = glm::scale(identityMatrix, glm::vec3(5.6f, 1.8f, 6.6f));
         glm::mat4 moveMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-        drawCube2(ourShader, translateMatrix * scaleMatrix, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), 0.8f, 32.0f);
+        drawCube(ourShader, translateMatrix * scaleMatrix, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), 0.8f, 32.0f);
 
 
       
@@ -324,7 +294,7 @@ int main()
         translateMatrix = glm::translate(identityMatrix, glm::vec3(17.0f, -0.4f, 8.0f));
         scaleMatrix = glm::scale(identityMatrix, glm::vec3(5.6f, 1.8f, 6.6f));
         moveMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-        drawCube2(ourShader, translateMatrix * scaleMatrix, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), 0.8f, 32.0f);
+        drawCube(ourShader, translateMatrix * scaleMatrix, 0.0f, glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), 0.8f, 32.0f);
 
         glm::vec4 bodyColor2 = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
         model = glm::mat4(1.0f);
@@ -394,6 +364,7 @@ int main()
         // =============== TRUCK =================
         ourShader.use();
         color1 = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+        glBindTexture(GL_TEXTURE_2D, textureTurret);
         drawTurret0(lightCubeShader, color1, glm::vec3(9.7f, -2.5f, 2.5f));
         drawTruck(ourShader);
         // Define custom scaling factors for each axis
@@ -481,7 +452,7 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &lightCubeVAO);
+    //glDeleteVertexArrays(1, &lightCubeVAO);
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteBuffers(1, &cubeEBO);
@@ -712,108 +683,6 @@ void Door(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color)
 
 
 
-
-void drawTurret0(Shader ourShader, glm::vec4 color, glm::vec3 T) {
-    glBindTexture(GL_TEXTURE_2D, textureTurret);
-
-    //glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-    //glm::mat4 translateMatrix, scaleMatrix;
-    //translateMatrix = glm::translate(identityMatrix, glm::vec3(T[0] + 1.0f, T[1] + 4.25f, T[2] + 2.5f));
-    //translateMatrix = glm::rotate(translateMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    //translateMatrix = glm::scale(translateMatrix, glm::vec3(4.0f, 4.0f, 0.2f));
-    //drawCube1(ourShader, translateMatrix, 0, color, 0.5, 0.2);
-
-    drawTurret(ourShader, color, glm::vec3(T[0]+0.0f, T[1]+0.0f, T[2]+0.0f));
-    drawTurret(ourShader, color, glm::vec3(T[0]+0.75f, T[1]+0.0f, T[2]+0.0f));
-    drawTurret(ourShader, color, glm::vec3(T[0]+0.0f, T[1]+0.75f, T[2]+0.0f));
-    drawTurret(ourShader, color, glm::vec3(T[0]+0.75f, T[1]+0.75f, T[2]+0.0f));
-}
-
-void drawTurret(Shader ourShader, glm::vec4 color, glm::vec3 T) {
-
-    glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-    glm::mat4 translateMatrix, scaleMatrix;
-    translateMatrix = glm::translate(identityMatrix, glm::vec3(T[0] + 0.0f, T[1] + 5.0f, T[2] + 0.0f));
-    translateMatrix = glm::rotate(translateMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    translateMatrix = glm::scale(translateMatrix, glm::vec3(1.0f, 0.2f, 5.0f));
-    drawCube1(ourShader, translateMatrix, 0, color, 0.5, 0.2);
-
-    translateMatrix = glm::translate(identityMatrix, glm::vec3(T[0] + 0.0f, T[1] + 4.5f, T[2] + 0.0f));
-    translateMatrix = glm::rotate(translateMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    translateMatrix = glm::scale(translateMatrix, glm::vec3(1.0f, 0.2f, 5.0f));
-    drawCube1(ourShader, translateMatrix, 0, color, 0.5, 0.2);
-
-    translateMatrix = glm::translate(identityMatrix, glm::vec3(T[0] + 0.0f, T[1] + 4.5f, T[2] + 0.0f));
-    translateMatrix = glm::rotate(translateMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    translateMatrix = glm::scale(translateMatrix, glm::vec3(0.2f, 1.0f, 5.0f));
-    drawCube1(ourShader, translateMatrix, 0, color, 0.5, 0.2);
-
-    translateMatrix = glm::translate(identityMatrix, glm::vec3(T[0] - 0.5f, T[1] + 4.5f, T[2] + 0.0f));
-    translateMatrix = glm::rotate(translateMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    translateMatrix = glm::scale(translateMatrix, glm::vec3(0.2f, 1.2f, 5.0f));
-    drawCube1(ourShader, translateMatrix, 0, color, 0.5, 0.2);
-
-    //translateMatrix = glm::translate(identityMatrix, glm::vec3(T[0] + 0.0f, T[1] + 4.5f, T[2] + 2.5f));
-    //translateMatrix = glm::rotate(translateMatrix, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    //translateMatrix = glm::scale(translateMatrix, glm::vec3(1.2f, 1.2f, 0.2f));
-    //drawCube1(ourShader, translateMatrix, 0, color, 0.5, 0.2);
-
-}
-
-void drawTruck(Shader lightingShader) {
-
-    // OpenGL Buffer Setup
-    unsigned int VBOt, VAOt, EBOt;
-    glGenVertexArrays(1, &VAOt);
-    glGenBuffers(1, &VBOt);
-    glGenBuffers(1, &EBOt);
-
-    glBindVertexArray(VAOt);
-
-    // VBO for vertex data (positions and normals are precomputed in vertexData)
-    glBindBuffer(GL_ARRAY_BUFFER, VBOt);
-    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
-
-    // EBO for face indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOt);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, tindices.size() * sizeof(unsigned int), tindices.data(), GL_STATIC_DRAW);
-
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Normal attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Unbind VAO (optional for safety)
-    glBindVertexArray(0);
-
-    glm::mat4 identityMatrix = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-    glm::mat4 translateMatrix, scaleMatrix, rotateXMatrix, model;
-
-    translateMatrix = glm::translate(identityMatrix, glm::vec3(5.0f, 0.0f, -9.5f));
-    scaleMatrix = glm::scale(identityMatrix, glm::vec3(0.03f, 0.03f, 0.03f));
-    rotateXMatrix = glm::rotate(identityMatrix,-1 * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    //translateMatrix = glm::translate(identityMatrix, sofaTranslation);
-    model = rotateXMatrix * translateMatrix * scaleMatrix;
-    // Define the wood color
-    glm::vec4 woodColor = glm::vec4(0.52f, 0.37f, 0.26f, 1.0f); // Medium brown (wood-like)
-
-    // Setting up material properties
-    lightingShader.setVec3("material.ambient", glm::vec3(woodColor) * 0.5f); // Darker for ambient
-    lightingShader.setVec3("material.diffuse", glm::vec3(woodColor));         // Main color for diffuse
-    lightingShader.setVec3("material.specular", glm::vec3(0.2f, 0.2f, 0.2f)); // Subtle highlights for specular
-    lightingShader.setFloat("material.shininess", 16.0f);
-
-    lightingShader.setMat4("model", model);
-    // Bind VAO
-    glBindVertexArray(VAOt);
-
-    // Draw the object
-    glDrawElements(GL_TRIANGLES, tindices.size(), GL_UNSIGNED_INT, 0);
-
-}
 
 
 

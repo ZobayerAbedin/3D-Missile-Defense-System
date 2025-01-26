@@ -163,6 +163,12 @@
     <ClInclude Include="missile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MissileLaunchingTruck.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="binding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="head_points.txt">

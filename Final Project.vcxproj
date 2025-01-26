@@ -177,12 +177,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic_camera.h" />
+    <ClInclude Include="binding.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="cylinder.h" />
     <ClInclude Include="directionalLight.h" />
     <ClInclude Include="half_sphere.h" />
     <ClInclude Include="missile.h" />
+    <ClInclude Include="MissileLaunchingTruck.h" />
     <ClInclude Include="pointLight.h" />
     <ClInclude Include="processInput.h" />
     <ClInclude Include="shader.h" />
