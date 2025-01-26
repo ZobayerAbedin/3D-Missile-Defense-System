@@ -42,21 +42,14 @@ void commandAndControl(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color, 
 void load_texture(unsigned int& texture, string image_name, GLenum format);
 void SetupPointLight(PointLight &pointLight, Shader ourShader, int lightNum);
 void Door(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color);
-long long nCr(int n, int r);
 void ShowFunctions();
 
 
-vector <float> cntrlPoints, cntrlPointsBoat, cntrlPointsRotor, cntrlPointsCylinder, cntrlPointsCarousal, cntrlPointsHead;
-vector <float> coordinates, coordinatesBoat, coordinatesRotor, coordinatesCylinder, coordinatesCarousal, coordinatesHead;
-vector <float> normals, normalsBoat, normalsRotor, normalsCylinder, normalsCarousal, normalsHead;
-vector <int> indices, indicesBoat, indicesRotor, indicesCylinder, indicesCarousal, indicesHead;
-vector <float> vertices, verticesBoat, verticesRotor, verticesCylinder, verticesCarousal, verticesHead;
 
 
 const int nt = 40;
 const int ntheta = 30;
 const double pi = 3.14159265389;
-
 
 unsigned int bezierVAO, boatVAO, rotorVAO, cylinderVAO, carousalVAO, headVAO;
 
@@ -716,24 +709,6 @@ void Door(Shader ourShader, glm::mat4 moveMatrix, glm::vec4 color)
     // Draw the door (cube)
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
-
-
-long long nCr(int n, int r)
-{
-    if (r > n / 2)
-        r = n - r; // because C(n, r) == C(n, n - r)
-    long long ans = 1;
-    int i;
-
-    for (i = 1; i <= r; i++)
-    {
-        ans *= n - r + i;
-        ans /= i;
-    }
-
-    return ans;
-}
-
 
 
 
